@@ -11,9 +11,10 @@ using Medical.Center.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add database context
+// Add database context with retry logic
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()));
 
 // Add Identity services
 builder.Services.AddIdentity<User, IdentityRole>()
@@ -30,15 +31,14 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-    {
-        ValidateIssuer = true,
+    {        ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["JWT:Issuer"],
         ValidAudience = builder.Configuration["JWT:Audience"],
         IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"] ?? throw new InvalidOperationException("JWT:Secret not found in configuration.")))
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"] ?? throw new InvalidOperationException("JWT:Key not found in configuration.")))
     };
     options.Events = new JwtBearerEvents
     {
@@ -98,18 +98,23 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Seed data
+// Ensure database is created and seed data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
+        var context = services.GetRequiredService<AppDbContext>();
+        // Ensure database is created
+        context.Database.EnsureCreated();
+
+        // Seed roles and admin user
         await Medical.Center.API.Data.Seed.SeedData.SeedRolesAndAdminAsync(services);
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
+        logger.LogError(ex, "An error occurred while creating/seeding the database.");
     }
 }
 

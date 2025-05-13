@@ -6,10 +6,8 @@ namespace Medical.Center.API.Models
     public class AuthLog
     {
         [Key]
-        public int LogId { get; set; }
-
-        [Required]
-        public int UserId { get; set; }
+        public int LogId { get; set; }        [Required]
+        public string UserId { get; set; } = string.Empty;
 
         [Required]
         public string Action { get; set; } = string.Empty;

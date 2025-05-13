@@ -9,13 +9,11 @@ namespace Medical.Center.API.Models
         public int Id { get; set; }
 
         [Required]
-        public string FileNumber { get; set; } = string.Empty;
+        public string FileNumber { get; set; } = string.Empty;        [Required]
+        public string PatientId { get; set; } = string.Empty;
 
         [Required]
-        public int PatientId { get; set; }
-
-        [Required]
-        public int DoctorId { get; set; }
+        public string DoctorId { get; set; } = string.Empty;
 
         [Required]
         public int SessionId { get; set; }

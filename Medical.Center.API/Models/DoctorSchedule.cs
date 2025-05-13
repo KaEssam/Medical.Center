@@ -6,10 +6,8 @@ namespace Medical.Center.API.Models
     public class DoctorSchedule
     {
         [Key]
-        public int Id { get; set; }
-
-        [Required]
-        public int DoctorId { get; set; }
+        public int Id { get; set; }        [Required]
+        public string DoctorId { get; set; } = string.Empty;
 
         [Required]
         public DateTime StartTime { get; set; }
