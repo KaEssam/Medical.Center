@@ -8,6 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Reflection;
 using Medical.Center.API.Models;
 using Medical.Center.API.Data;
+using Medical.Center.API.Service.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+
 // Add controllers
 builder.Services.AddControllers();
 
@@ -96,18 +98,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+
 var app = builder.Build();
 
-// Ensure database is created and seed data
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;    try
     {
         var context = services.GetRequiredService<AppDbContext>();
-        // Use migrations instead of EnsureCreated
         context.Database.Migrate();
 
-        // Seed roles and admin user
         await Medical.Center.API.Data.Seed.SeedData.SeedRolesAndAdminAsync(services);
     }
     catch (Exception ex)

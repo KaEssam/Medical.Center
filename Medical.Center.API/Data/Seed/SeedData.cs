@@ -44,7 +44,8 @@ public static class SeedData
                 EmailConfirmed = true,
                 FirstName = "System",
                 LastName = "Owner",
-                Status = "Active"
+                Status = "Active",
+                Role = "Owner"
             };
 
             var result = await userManager.CreateAsync(owner, "Owner@123456");
