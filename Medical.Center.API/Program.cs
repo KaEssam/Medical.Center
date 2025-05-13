@@ -101,12 +101,11 @@ var app = builder.Build();
 // Ensure database is created and seed data
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    try
+    var services = scope.ServiceProvider;    try
     {
         var context = services.GetRequiredService<AppDbContext>();
-        // Ensure database is created
-        context.Database.EnsureCreated();
+        // Use migrations instead of EnsureCreated
+        context.Database.Migrate();
 
         // Seed roles and admin user
         await Medical.Center.API.Data.Seed.SeedData.SeedRolesAndAdminAsync(services);
