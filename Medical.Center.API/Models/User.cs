@@ -10,8 +10,9 @@ namespace Medical.Center.API.Models
         public string FirstName { get; set; } = string.Empty;
 
         [Required]
-        public string LastName { get; set; } = string.Empty;        [EmailAddress]
-        public override string? Email { get => base.Email; set => base.Email = value; }
+        public string LastName { get; set; } = string.Empty;
+        [EmailAddress]
+        public override string Email { get; set; }
         
         [Phone]
         public override string? PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
@@ -29,6 +30,7 @@ namespace Medical.Center.API.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Price { get; set; }
 
+        public string? Role { get; set; }
         public bool HasMedFreeSession { get; set; }
 
         // Navigation properties
